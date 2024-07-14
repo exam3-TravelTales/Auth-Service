@@ -339,4 +339,8 @@ func (h Handler) Follow(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user id is incorrect"})
 	}
 	res, err := h.User.Follow(c, &pb.UserId{Id: id})
+	if err != nil {
+		h.Log.Error(err.Error())
+		c.JSON(500, gin.H{"error": err.Error()})
+	}
 }
