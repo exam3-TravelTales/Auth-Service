@@ -352,6 +352,7 @@ func (h Handler) Follow(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 	}
 	c.JSON(http.StatusOK, res)
+	h.Log.Info("Follow ended")
 }
 
 // Followers godoc
@@ -360,9 +361,56 @@ func (h Handler) Follow(c *gin.Context) {
 // @Description you can see your followers
 // @Tags users
 // @Param user_id path string true "user_id"
+// @Param limit query string false "Number of users to fetch"
+// @Param offset query string false "Number of users to omit"
 // @Success 200 {object} users.
 // @Failure 400 {object} string "Invalid data"
 // @Failure 500 {object} string "error while reading from server"
 // @Router /api/v1/users/{user_id}/followers [get]
 
-func (h Handler) Followers(c *gin.Context) {}
+func (h Handler) Followers(c *gin.Context) {
+	h.Log.Info("Followers is working")
+	id := c.Param("user_id")
+	_, err := uuid.Parse(id)
+	if err != nil {
+		h.Log.Error(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user id is incorrect"})
+	}
+	req := pb.FollowersRequest{UserId: id}
+
+	limitStr := c.Query("limit")
+	offsetStr := c.Query("offset")
+
+	if limitStr != "" {
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest,
+				gin.H{"error": err.Error()})
+			h.Log.Error(err.Error())
+			return
+		}
+		req.Limit = int64(limit)
+	} else {
+		req.Limit = 0
+	}
+
+	if offsetStr != "" {
+		offset, err := strconv.Atoi(offsetStr)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest,
+				gin.H{"error": err.Error()})
+			h.Log.Error(err.Error())
+			return
+		}
+		req.Offset = int64(offset)
+	} else {
+		req.Offset = 0
+	}
+
+	res, err := h.User.Followers(c, &req)
+	if err != nil {
+		h.Log.Error(err.Error())
+	}
+	c.JSON(http.StatusOK, res)
+	h.Log.Info("Followers ended")
+}
