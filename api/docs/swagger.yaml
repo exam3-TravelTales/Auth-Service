@@ -1,12 +1,430 @@
-host: localhost:8085
+definitions:
+  users.ActivityResponse:
+    properties:
+      comments_count:
+        type: integer
+      countries_visited:
+        type: integer
+      last_activity:
+        type: string
+      likes_received:
+        type: integer
+      stories_count:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  users.CheckRefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  users.EmailRecoveryRequest:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+      user_id:
+        type: string
+    type: object
+  users.FollowResponse:
+    properties:
+      followed_at:
+        type: string
+      follower_id:
+        type: string
+      following_id:
+        type: string
+    type: object
+  users.GetProfileResponse:
+    properties:
+      bio:
+        type: string
+      countries_visited:
+        type: integer
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  users.GetUsersResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/users.Users'
+        type: array
+    type: object
+  users.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  users.RegisterRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  users.RegisterResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+    type: object
+  users.Tokens:
+    properties:
+      accestoken:
+        type: string
+      refreshtoken:
+        type: string
+    type: object
+  users.UpdateProfileRequest:
+    properties:
+      bio:
+        type: string
+      countries_visited:
+        type: integer
+      full_name:
+        type: string
+      id:
+        type: string
+    type: object
+  users.UpdateProfileResponse:
+    properties:
+      bio:
+        type: string
+      countries_visited:
+        type: integer
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  users.Users:
+    properties:
+      countries_visited:
+        type: integer
+      full_name:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+    type: object
 info:
   contact: {}
-  description: API Gateway of Authorazation
-  title: User
-  version: "1.0"
-paths: {}
+paths:
+  /api/v1/auth/login:
+    post:
+      description: it generates new access and refresh tokens
+      parameters:
+      - description: username and password
+        in: body
+        name: userinfo
+        required: true
+        schema:
+          $ref: '#/definitions/users.LoginRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.Tokens'
+        "400":
+          description: Invalid date
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      summary: login user
+      tags:
+      - auth
+  /api/v1/auth/refresh:
+    post:
+      description: it changes your password to new one
+      parameters:
+      - description: token
+        in: body
+        name: userinfo
+        required: true
+        schema:
+          $ref: '#/definitions/users.CheckRefreshTokenRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.Tokens'
+        "400":
+          description: Invalid date
+          schema:
+            type: string
+        "401":
+          description: Invalid token
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      summary: ResetPass user
+      tags:
+      - auth
+  /api/v1/auth/register:
+    post:
+      description: create new users
+      parameters:
+      - description: User info
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/users.RegisterRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.RegisterResponse'
+        "400":
+          description: Invalid data
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Register user
+      tags:
+      - auth
+  /api/v1/auth/reset-password:
+    post:
+      description: it changes your password to new one
+      parameters:
+      - description: passwords
+        in: body
+        name: userinfo
+        required: true
+        schema:
+          $ref: '#/definitions/users.EmailRecoveryRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid date
+          schema:
+            type: string
+        "401":
+          description: Invalid token
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: ResetPass user
+      tags:
+      - userAuth
+  /api/v1/users:
+    get:
+      description: you can see all users
+      parameters:
+      - description: Number of users to fetch
+        in: query
+        name: limit
+        type: string
+      - description: Number of users to omit
+        in: query
+        name: offset
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.GetUsersResponse'
+        "400":
+          description: Invalid data
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: ResetPass user
+      tags:
+      - users
+  /api/v1/users/{user_id}:
+    delete:
+      description: you can delete your profile
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid data
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: ResetPass user
+      tags:
+      - users
+  /api/v1/users/{user_id}/activity:
+    get:
+      description: you can see your profile activity
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.ActivityResponse'
+        "400":
+          description: Invalid data
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: ResetPass user
+      tags:
+      - users
+  /api/v1/users/{user_id}/follow:
+    post:
+      description: you can follow another user
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.FollowResponse'
+        "400":
+          description: Invalid data
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: ResetPass user
+      tags:
+      - users
+  /api/v1/users/profile:
+    get:
+      description: you can see your profile
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.GetProfileResponse'
+        "401":
+          description: Invalid token
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: ResetPass user
+      tags:
+      - users
+    put:
+      description: you can update your profile
+      parameters:
+      - description: info
+        in: body
+        name: userinfo
+        required: true
+        schema:
+          $ref: '#/definitions/users.UpdateProfileRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UpdateProfileResponse'
+        "400":
+          description: Invalid data
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: ResetPass user
+      tags:
+      - users
 securityDefinitions:
   ApiKeyAuth:
+    description: API Gateway of Authorazation
     in: header
     name: Authorization
     type: apiKey

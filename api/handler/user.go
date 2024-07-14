@@ -75,11 +75,12 @@ func (h Handler) Login(c *gin.Context) {
 }
 
 // ResetPassword godoc
+// @Security ApiKeyAuth
 // @Summary ResetPass user
 // @Description it changes your password to new one
-// @Tags auth
+// @Tags userAuth
 // @Param userinfo body users.EmailRecoveryRequest true "passwords"
-// @Success 200 {object} gin.H
+// @Success 200 {object} string
 // @Failure 400 {object} string "Invalid date"
 // @Failure 401 {object} string "Invalid token"
 // @Failure 500 {object} string "error while reading from server"
@@ -113,7 +114,7 @@ func (h Handler) ResetPassword(c *gin.Context) {
 // Refresh godoc
 // @Summary ResetPass user
 // @Description it changes your password to new one
-// @Tags userAuth
+// @Tags auth
 // @Param userinfo body users.CheckRefreshTokenRequest true "token"
 // @Success 200 {object} users.Tokens
 // @Failure 400 {object} string "Invalid date"
@@ -148,10 +149,10 @@ func (h Handler) Refresh(c *gin.Context) {
 }
 
 // Logout godoc
-// @Summary ResetPass user
+// @Summary Logout user
 // @Description you log out
 // @Tags auth
-// @Success 200 {object} gin.H
+// @Success 200 {object} string
 // @Router /api/v1/auth/logout [post]
 
 func (h Handler) Logout(c *gin.Context) {
@@ -270,7 +271,7 @@ func (h Handler) GetAllUsers(c *gin.Context) {
 // @Description you can delete your profile
 // @Tags users
 // @Param user_id path string true "user_id"
-// @Success 200 {object} gin.H
+// @Success 200 {object} string
 // @Failure 400 {object} string "Invalid data"
 // @Failure 500 {object} string "error while reading from server"
 // @Router /api/v1/users/{user_id} [delete]
@@ -326,7 +327,7 @@ func (h Handler) Activity(c *gin.Context) {
 // @Description you can follow another user
 // @Tags users
 // @Param user_id path string true "user_id"
-// @Success 200 {object} users.
+// @Success 200 {object} users.FollowResponse
 // @Failure 400 {object} string "Invalid data"
 // @Failure 500 {object} string "error while reading from server"
 // @Router /api/v1/users/{user_id}/follow [post]
@@ -360,15 +361,15 @@ func (h Handler) Follow(c *gin.Context) {
 // @Summary ResetPass user
 // @Description you can see your followers
 // @Tags users
-// @Param user_id path string true "user_id"
+//@Param user_id path string true "user_id"
 // @Param limit query string false "Number of users to fetch"
 // @Param offset query string false "Number of users to omit"
-// @Success 200 {object} users.
+// @Success 200 {object} users.FollowersResponse
 // @Failure 400 {object} string "Invalid data"
 // @Failure 500 {object} string "error while reading from server"
 // @Router /api/v1/users/{user_id}/followers [get]
 
-func (h Handler) Followers(c *gin.Context) {
+func (h Handler) GetFollowers(c *gin.Context) {
 	h.Log.Info("Followers is working")
 	id := c.Param("user_id")
 	_, err := uuid.Parse(id)
