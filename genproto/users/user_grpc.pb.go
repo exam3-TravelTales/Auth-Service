@@ -32,8 +32,8 @@ type UserClient interface {
 	CheckRefreshToken(ctx context.Context, in *CheckRefreshTokenRequest, opts ...grpc.CallOption) (*CheckRefreshTokenResponse, error)
 	Logout(ctx context.Context, in *Void, opts ...grpc.CallOption) (*BoolResponse, error)
 	Activity(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*ActivityResponse, error)
-	Follow(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*FollowResponse, error)
-	Followers(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*FollowersResponse, error)
+	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
+	Followers(ctx context.Context, in *FollowersRequest, opts ...grpc.CallOption) (*FollowersResponse, error)
 }
 
 type userClient struct {
@@ -134,7 +134,7 @@ func (c *userClient) Activity(ctx context.Context, in *UserId, opts ...grpc.Call
 	return out, nil
 }
 
-func (c *userClient) Follow(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*FollowResponse, error) {
+func (c *userClient) Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error) {
 	out := new(FollowResponse)
 	err := c.cc.Invoke(ctx, "/user.User/Follow", in, out, opts...)
 	if err != nil {
@@ -143,7 +143,7 @@ func (c *userClient) Follow(ctx context.Context, in *UserId, opts ...grpc.CallOp
 	return out, nil
 }
 
-func (c *userClient) Followers(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*FollowersResponse, error) {
+func (c *userClient) Followers(ctx context.Context, in *FollowersRequest, opts ...grpc.CallOption) (*FollowersResponse, error) {
 	out := new(FollowersResponse)
 	err := c.cc.Invoke(ctx, "/user.User/Followers", in, out, opts...)
 	if err != nil {
@@ -166,8 +166,8 @@ type UserServer interface {
 	CheckRefreshToken(context.Context, *CheckRefreshTokenRequest) (*CheckRefreshTokenResponse, error)
 	Logout(context.Context, *Void) (*BoolResponse, error)
 	Activity(context.Context, *UserId) (*ActivityResponse, error)
-	Follow(context.Context, *UserId) (*FollowResponse, error)
-	Followers(context.Context, *UserId) (*FollowersResponse, error)
+	Follow(context.Context, *FollowRequest) (*FollowResponse, error)
+	Followers(context.Context, *FollowersRequest) (*FollowersResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -205,10 +205,10 @@ func (UnimplementedUserServer) Logout(context.Context, *Void) (*BoolResponse, er
 func (UnimplementedUserServer) Activity(context.Context, *UserId) (*ActivityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Activity not implemented")
 }
-func (UnimplementedUserServer) Follow(context.Context, *UserId) (*FollowResponse, error) {
+func (UnimplementedUserServer) Follow(context.Context, *FollowRequest) (*FollowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Follow not implemented")
 }
-func (UnimplementedUserServer) Followers(context.Context, *UserId) (*FollowersResponse, error) {
+func (UnimplementedUserServer) Followers(context.Context, *FollowersRequest) (*FollowersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Followers not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
@@ -405,7 +405,7 @@ func _User_Activity_Handler(srv interface{}, ctx context.Context, dec func(inter
 }
 
 func _User_Follow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserId)
+	in := new(FollowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -417,13 +417,13 @@ func _User_Follow_Handler(srv interface{}, ctx context.Context, dec func(interfa
 		FullMethod: "/user.User/Follow",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Follow(ctx, req.(*UserId))
+		return srv.(UserServer).Follow(ctx, req.(*FollowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _User_Followers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserId)
+	in := new(FollowersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -435,7 +435,7 @@ func _User_Followers_Handler(srv interface{}, ctx context.Context, dec func(inte
 		FullMethod: "/user.User/Followers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Followers(ctx, req.(*UserId))
+		return srv.(UserServer).Followers(ctx, req.(*FollowersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

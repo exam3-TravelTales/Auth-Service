@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS followers (
 
 
 CREATE TABLE IF NOT EXISTS stories (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(200) NOT NULL,
     content TEXT NOT NULL,
     location VARCHAR(100),
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS story_tags (
 );
 
 CREATE TABLE IF NOT EXISTS comments (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     content TEXT NOT NULL,
     author_id UUID REFERENCES users(id),
     story_id UUID REFERENCES stories(id),
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS likes (
 );
 
 CREATE TABLE IF NOT EXISTS itineraries (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(200) NOT NULL,
     description TEXT,
     start_date DATE NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS itineraries (
 );
 
 CREATE TABLE IF NOT EXISTS itinerary_destinations (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     itinerary_id UUID REFERENCES itineraries(id),
     name VARCHAR(100) NOT NULL,
     start_date DATE NOT NULL,
@@ -74,13 +74,13 @@ CREATE TABLE IF NOT EXISTS itinerary_destinations (
 );
 
 CREATE TABLE IF NOT EXISTS itinerary_activities (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     destination_id UUID REFERENCES itinerary_destinations(id),
     activity TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS destinations (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
     country VARCHAR(100) NOT NULL,
     description TEXT,
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS destinations (
 );
 
 CREATE TABLE IF NOT EXISTS messages (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     sender_id UUID REFERENCES users(id),
     recipient_id UUID REFERENCES users(id),
     content TEXT NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 
 CREATE TABLE IF NOT EXISTS travel_tips (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(200) NOT NULL,
     content TEXT NOT NULL,
     category VARCHAR(50),

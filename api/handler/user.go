@@ -320,13 +320,13 @@ func (h Handler) Activity(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-// Activity godoc
+// Follow godoc
 // @Security ApiKeyAuth
 // @Summary ResetPass user
 // @Description you can follow another user
 // @Tags users
 // @Param user_id path string true "user_id"
-// @Success 200 {object} users.ActivityResponse
+// @Success 200 {object} users.
 // @Failure 400 {object} string "Invalid data"
 // @Failure 500 {object} string "error while reading from server"
 // @Router /api/v1/users/{user_id}/follow [post]
@@ -338,9 +338,31 @@ func (h Handler) Follow(c *gin.Context) {
 		h.Log.Error(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user id is incorrect"})
 	}
-	res, err := h.User.Follow(c, &pb.UserId{Id: id})
+
+	accessToken := c.GetHeader("Authorization")
+	idFollower, err := auth.GetUserIdFromAccessToken(accessToken)
+	if err != nil {
+		h.Log.Error(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "unauthorized"})
+	}
+
+	res, err := h.User.Follow(c, &pb.FollowRequest{FollowerId: idFollower, FollowingId: id})
 	if err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(500, gin.H{"error": err.Error()})
 	}
+	c.JSON(http.StatusOK, res)
 }
+
+// Followers godoc
+// @Security ApiKeyAuth
+// @Summary ResetPass user
+// @Description you can see your followers
+// @Tags users
+// @Param user_id path string true "user_id"
+// @Success 200 {object} users.
+// @Failure 400 {object} string "Invalid data"
+// @Failure 500 {object} string "error while reading from server"
+// @Router /api/v1/users/{user_id}/followers [get]
+
+func (h Handler) Followers(c *gin.Context) {}

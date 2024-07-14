@@ -126,9 +126,10 @@ func (u *UserService) Activity(ctx context.Context, req *pb.UserId) (*pb.Activit
 	return res, nil
 }
 
-func (u *UserService) Follow(ctx context.Context, req *pb.UserId) (*pb.FollowResponse, error) {
+func (u *UserService) Follow(ctx context.Context, req *pb.FollowRequest) (*pb.FollowResponse, error) {
 	u.Log.Info("Follow rpc method started")
-	res, err := u.Follow(ctx, req)
+
+	res, err := u.Repo.Follow(ctx, req.FollowerId, req.FollowingId)
 	if err != nil {
 		u.Log.Error(err.Error())
 		return nil, err
@@ -137,9 +138,9 @@ func (u *UserService) Follow(ctx context.Context, req *pb.UserId) (*pb.FollowRes
 	return res, nil
 }
 
-func (u *UserService) Followers(ctx context.Context, req *pb.UserId) (*pb.FollowersResponse, error) {
+func (u *UserService) Followers(ctx context.Context, req *pb.FollowersRequest) (*pb.FollowersResponse, error) {
 	u.Log.Info("Followers rpc method started")
-	res, err := u.Followers(ctx, req)
+	res, err := u.Repo.GetFollowers(ctx, req.UserId, req.Limit, req.Offset)
 	if err != nil {
 		u.Log.Error(err.Error())
 	}

@@ -42,8 +42,8 @@ func Router(hand *handler.Handler) *gin.Engine {
 		user.PUT("/profile", hand.UserProfileUpdate)
 		user.GET("/", hand.GetAllUsers)
 		user.DELETE("/:user_id", hand.Delete)
-		user.GET("/:user_id/activity")
-		user.POST("/:user_id/follow")
+		user.GET("/:user_id/activity", hand.Activity)
+		user.POST("/:user_id/follow", hand.Follow)
 		user.GET("/:user_id/followers")
 	}
 
