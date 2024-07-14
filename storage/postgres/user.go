@@ -4,6 +4,7 @@ import (
 	pb "auth/genproto/users"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 )
@@ -21,26 +22,35 @@ func (r *UserRepo) GetUserByID(ctx context.Context, id string) (*pb.UserInfo, er
 
 	query := `
 	SELECT
-	username,
-	email,
-	password,
-	full_name,
-	bio,
-	countries_visited
-	from
+		username,
+		email,
+		password,
+		full_name,
+		bio,
+		countries_visited
+	FROM
 		users
-	where
-		id = $1 and deleted_at=0
+	WHERE
+		id = $1 AND deleted_at = 0
 	`
 	row := r.DB.QueryRowContext(ctx, query, id)
 
-	err := row.Scan(&user.Username, &user.Email, &user.Password, &user.FullName, &user.Bio, &user.CountriesVisited)
+	var bio sql.NullString
+	err := row.Scan(&user.Username, &user.Email, &user.Password, &user.FullName, &bio, &user.CountriesVisited)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, err
+			return nil, errors.New("user not found")
 		}
 		return nil, err
 	}
+
+	// Assign the bio value based on whether it is valid or not
+	if bio.Valid {
+		user.Bio = bio.String
+	} else {
+		user.Bio = ""
+	}
+
 	return &user, nil
 }
 
@@ -62,13 +72,18 @@ func (r *UserRepo) GetUserProfile(ctx context.Context, id *pb.UserId) (*pb.GetPr
 		id = $1 and deleted_at=0
 	`
 	row := r.DB.QueryRowContext(ctx, query, id.Id)
-
-	err := row.Scan(&user.Username, &user.Email, &user.FullName, &user.Bio, &user.CountriesVisited, &user.CreatedAt, &user.UpdatedAt)
+	var bio sql.NullString
+	err := row.Scan(&user.Username, &user.Email, &user.FullName, &bio, &user.CountriesVisited, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, err
 		}
 		return nil, err
+	}
+	if bio.Valid {
+		user.Bio = bio.String
+	} else {
+		user.Bio = ""
 	}
 	return &user, nil
 }
@@ -107,13 +122,19 @@ func (r *UserRepo) GetUserByEmail(ctx context.Context, email string) (*pb.UserIn
 		email = $1 and deleted_at=0
 	`
 	row := r.DB.QueryRowContext(ctx, query, email)
+	var bio sql.NullString
 
-	err := row.Scan(&user.Id, &user.Username, &user.Password, &user.FullName, &user.Bio, &user.CountriesVisited)
+	err := row.Scan(&user.Id, &user.Username, &user.Password, &user.FullName, &bio, &user.CountriesVisited)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, err
 		}
 		return nil, err
+	}
+	if bio.Valid {
+		user.Bio = bio.String
+	} else {
+		user.Bio = ""
 	}
 	return &user, nil
 }
@@ -123,23 +144,24 @@ func (r *UserRepo) UpdateUser(ctx context.Context, req *pb.UpdateProfileRequest)
 	n := 1
 	var arr []interface{}
 	if len(req.Bio) > 0 {
-		query += fmt.Sprintf("bio = $%d ", n)
+		query += fmt.Sprintf("bio = $%d, ", n)
 		arr = append(arr, req.Bio)
 		n++
 	}
 	if len(req.FullName) > 0 {
-		query += fmt.Sprintf("full_name = $%d ", n)
+		query += fmt.Sprintf("full_name = $%d, ", n)
 		arr = append(arr, req.FullName)
 		n++
 	}
 
 	if req.CountriesVisited > 0 {
-		query += fmt.Sprintf("countries_visited = $%d ", n)
+		query += fmt.Sprintf("countries_visited = $%d, ", n)
 		arr = append(arr, req.CountriesVisited)
 		n++
 	}
-	query += fmt.Sprintf("updated_at=current_timestamp where user_id=$%d and deleted_at=0 ", n)
+	query += fmt.Sprintf("updated_at=current_timestamp where id=$%d and deleted_at=0 ", n)
 	arr = append(arr, req.Id)
+
 	_, err := r.DB.Exec(query, arr...)
 	if err != nil {
 		return nil, err
@@ -222,9 +244,9 @@ func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *UserRepo) UpdatePassword(ctx context.Context, user_id string, password string) error {
+func (r *UserRepo) UpdatePassword(ctx context.Context, req *pb.EmailRecoveryRequest) error {
 	query := `update users set password=$1 where id=$2`
-	_, err := r.DB.ExecContext(ctx, query, password, user_id)
+	_, err := r.DB.ExecContext(ctx, query, req.NewPassword, req.UserId)
 	if err != nil {
 		return err
 	}
@@ -253,18 +275,23 @@ func (r *UserRepo) GetUserActivity(ctx context.Context, userID string) (*pb.Acti
             u.id, u.countries_visited
     `
 
+	var activity sql.NullString
 	err := r.DB.QueryRowContext(ctx, query, userID).Scan(
 		&activityResponse.UserId,
 		&activityResponse.StoriesCount,
 		&activityResponse.CommentsCount,
 		&activityResponse.LikesReceived,
 		&activityResponse.CountriesVisited,
-		&activityResponse.LastActivity,
+		&activity,
 	)
 	if err != nil {
 		return nil, err
 	}
-
+	if activity.Valid {
+		activityResponse.LastActivity = activity.String
+	} else {
+		activityResponse.LastActivity = ""
+	}
 	return &activityResponse, nil
 }
 
@@ -278,7 +305,7 @@ func (r *UserRepo) Follow(ctx context.Context, followerID string, followingID st
 		VALUES ($1, $2)
 		RETURNING followed_at
 	`
-	err := r.DB.QueryRowContext(ctx, query, followerID).Scan(&followedAt)
+	err := r.DB.QueryRowContext(ctx, query, followerID, followingID).Scan(&followedAt)
 	if err != nil {
 		return nil, err
 	}
