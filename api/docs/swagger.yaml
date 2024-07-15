@@ -37,6 +37,28 @@ definitions:
       following_id:
         type: string
     type: object
+  users.Followers:
+    properties:
+      full_name:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+    type: object
+  users.FollowersResponse:
+    properties:
+      followers:
+        items:
+          $ref: '#/definitions/users.Followers'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
   users.GetProfileResponse:
     properties:
       bio:
@@ -173,6 +195,17 @@ paths:
           schema:
             type: string
       summary: login user
+      tags:
+      - auth
+  /api/v1/auth/logout:
+    post:
+      description: you log out
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Logout user
       tags:
       - auth
   /api/v1/auth/refresh:
@@ -361,6 +394,41 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/users.FollowResponse'
+        "400":
+          description: Invalid data
+          schema:
+            type: string
+        "500":
+          description: error while reading from server
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: ResetPass user
+      tags:
+      - users
+  /api/v1/users/{user_id}/followers:
+    get:
+      description: you can see your followers
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Number of users to fetch
+        in: query
+        name: limit
+        type: string
+      - description: Number of users to omit
+        in: query
+        name: offset
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.FollowersResponse'
         "400":
           description: Invalid data
           schema:

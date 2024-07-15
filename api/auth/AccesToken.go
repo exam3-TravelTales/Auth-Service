@@ -3,6 +3,7 @@ package auth
 import (
 	pb "auth/genproto/users"
 	"github.com/dgrijalva/jwt-go"
+	"log"
 	"time"
 )
 
@@ -11,6 +12,7 @@ const (
 )
 
 func GeneratedAccessJWTToken(req *pb.UserInfo, tok *pb.Tokens) error {
+
 	token := *jwt.New(jwt.SigningMethodHS256)
 
 	//payload
@@ -21,8 +23,10 @@ func GeneratedAccessJWTToken(req *pb.UserInfo, tok *pb.Tokens) error {
 
 	newToken, err := token.SignedString([]byte(signingkey))
 	if err != nil {
+		log.Println(err)
 		return err
 	}
+
 	tok.Accestoken = newToken
 	return nil
 }

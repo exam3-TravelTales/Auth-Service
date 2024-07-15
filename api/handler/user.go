@@ -3,10 +3,11 @@ package handler
 import (
 	"auth/api/auth"
 	pb "auth/genproto/users"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // Register godoc
@@ -47,29 +48,32 @@ func (h Handler) Register(c *gin.Context) {
 func (h Handler) Login(c *gin.Context) {
 	h.Log.Info("Login is working")
 	req := pb.LoginRequest{}
+
 	if err := c.BindJSON(&req); err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error1": err.Error()})
 	}
+
 	res, err := h.User.Login(c, &req)
 	if err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(500, gin.H{"error2": err.Error()})
 		return
 	}
-	var token *pb.Tokens
-	err = auth.GeneratedAccessJWTToken(res, token)
+	var token pb.Tokens
+	err = auth.GeneratedAccessJWTToken(res, &token)
+
 	if err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(500, gin.H{"error3": err.Error()})
 	}
-	err = auth.GeneratedRefreshJWTToken(res, token)
+	err = auth.GeneratedRefreshJWTToken(res, &token)
 	if err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(500, gin.H{"error4": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, token)
+	c.JSON(http.StatusOK, &token)
 	h.Log.Info("login is succesfully ended")
 
 }
@@ -94,20 +98,23 @@ func (h Handler) ResetPassword(c *gin.Context) {
 	if err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
 	}
 
 	if err := c.BindJSON(&req); err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error1": err.Error()})
+		return
 	}
-	res, err := h.User.EmailRecovery(c, &req)
+	_, err = h.User.EmailRecovery(c, &req)
 	if err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
-	if res.Success {
-		c.JSON(http.StatusOK, gin.H{"message": "password successfully reset"})
-	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "password successfully reset"})
+
 	h.Log.Info("ResetPassword ended")
 }
 
@@ -154,7 +161,6 @@ func (h Handler) Refresh(c *gin.Context) {
 // @Tags auth
 // @Success 200 {object} string
 // @Router /api/v1/auth/logout [post]
-
 func (h Handler) Logout(c *gin.Context) {
 	h.Log.Info("Logout is working")
 	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
@@ -181,7 +187,7 @@ func (h Handler) Profile(c *gin.Context) {
 	res, err := h.User.GetProfile(c, &pb.UserId{Id: id})
 	if err != nil {
 		h.Log.Error(err.Error())
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error1": err.Error()})
 	}
 	c.JSON(http.StatusOK, res)
 	h.Log.Info("Profile ended")
@@ -199,7 +205,9 @@ func (h Handler) Profile(c *gin.Context) {
 // @Router /api/v1/users/profile [put]
 func (h Handler) UserProfileUpdate(c *gin.Context) {
 	h.Log.Info("UserProfileUpdate is working")
-	req := pb.UpdateProfileRequest{}
+	accessToken := c.GetHeader("Authorization")
+	id, err := auth.GetUserIdFromAccessToken(accessToken)
+	req := pb.UpdateProfileRequest{Id: id}
 	if err := c.BindJSON(&req); err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -294,9 +302,9 @@ func (h Handler) Delete(c *gin.Context) {
 	h.Log.Info("Delete ended")
 }
 
-// Activity godoc
+// ActivityOfUser godoc
 // @Security ApiKeyAuth
-// @Summary ResetPass user
+// @Summary Activities user
 // @Description you can see your profile activity
 // @Tags users
 // @Param user_id path string true "user_id"
@@ -304,7 +312,7 @@ func (h Handler) Delete(c *gin.Context) {
 // @Failure 400 {object} string "Invalid data"
 // @Failure 500 {object} string "error while reading from server"
 // @Router /api/v1/users/{user_id}/activity [get]
-func (h Handler) Activity(c *gin.Context) {
+func (h Handler) ActivityOfUser(c *gin.Context) {
 	h.Log.Info("Activity is working")
 	id := c.Param("user_id")
 	_, err := uuid.Parse(id)
@@ -313,12 +321,19 @@ func (h Handler) Activity(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user id is incorrect"})
 		return
 	}
-	res, err := h.User.Activity(c, &pb.UserId{Id: id})
+	req := pb.UserId{
+		Id: id,
+	}
+
+	res, err := h.User.Activity(c, &req)
+
 	if err != nil {
 		h.Log.Error(err.Error())
 		c.JSON(500, gin.H{"error": err.Error()})
 	}
-	c.JSON(http.StatusOK, res)
+
+	c.JSON(http.StatusOK, &res)
+	h.Log.Info("Activity ended")
 }
 
 // Follow godoc
@@ -356,19 +371,18 @@ func (h Handler) Follow(c *gin.Context) {
 	h.Log.Info("Follow ended")
 }
 
-// Followers godoc
+// GetFollowers godoc
 // @Security ApiKeyAuth
 // @Summary ResetPass user
 // @Description you can see your followers
 // @Tags users
-//@Param user_id path string true "user_id"
+// @Param user_id path string true "user_id"
 // @Param limit query string false "Number of users to fetch"
 // @Param offset query string false "Number of users to omit"
 // @Success 200 {object} users.FollowersResponse
 // @Failure 400 {object} string "Invalid data"
 // @Failure 500 {object} string "error while reading from server"
 // @Router /api/v1/users/{user_id}/followers [get]
-
 func (h Handler) GetFollowers(c *gin.Context) {
 	h.Log.Info("Followers is working")
 	id := c.Param("user_id")

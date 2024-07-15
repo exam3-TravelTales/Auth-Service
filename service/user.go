@@ -134,6 +134,7 @@ func (u *UserService) Follow(ctx context.Context, req *pb.FollowRequest) (*pb.Fo
 		u.Log.Error(err.Error())
 		return nil, err
 	}
+
 	u.Log.Info("Follow rpc method finished")
 	return res, nil
 }

@@ -69,7 +69,7 @@ func (r *UserRepo) GetUserProfile(ctx context.Context, id *pb.UserId) (*pb.GetPr
 	from
 		users
 	where
-		id = $1 and deleted_at=0
+		deleted_at=0 and id = $1 
 	`
 	row := r.DB.QueryRowContext(ctx, query, id.Id)
 	var bio sql.NullString
@@ -284,6 +284,7 @@ func (r *UserRepo) GetUserActivity(ctx context.Context, userID string) (*pb.Acti
 		&activityResponse.CountriesVisited,
 		&activity,
 	)
+
 	if err != nil {
 		return nil, err
 	}
