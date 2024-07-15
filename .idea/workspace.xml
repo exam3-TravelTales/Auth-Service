@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66ae90cc-da3a-4aeb-a781-5b79fb0aebc4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/api/auth/AccesToken.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/auth/AccesToken.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/docs/docs.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/docs/docs.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/docs/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/api/docs/swagger.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/docs/swagger.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/api/docs/swagger.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/handler/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/handler/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.log" beforeDir="false" afterPath="$PROJECT_DIR$/app.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage/postgres/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/postgres/user.go" afterDir="false" />
-    </list>
+    <list default="true" id="66ae90cc-da3a-4aeb-a781-5b79fb0aebc4" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
