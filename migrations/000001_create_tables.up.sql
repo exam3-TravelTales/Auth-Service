@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS destinations (
     language VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at BIGINT Default 0
+    deleted_at BIGINT De
 );
 
 CREATE TABLE IF NOT EXISTS messages (
