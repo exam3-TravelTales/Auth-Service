@@ -119,8 +119,8 @@ func (h Handler) ResetPassword(c *gin.Context) {
 }
 
 // Refresh godoc
-// @Summary ResetPass user
-// @Description it changes your password to new one
+// @Summary Refresh token
+// @Description it changes your access token
 // @Tags auth
 // @Param userinfo body users.CheckRefreshTokenRequest true "token"
 // @Success 200 {object} users.Tokens
@@ -169,7 +169,7 @@ func (h Handler) Logout(c *gin.Context) {
 
 // Profile godoc
 // @Security ApiKeyAuth
-// @Summary ResetPass user
+// @Summary get user
 // @Description you can see your profile
 // @Tags users
 // @Success 200 {object} users.GetProfileResponse
@@ -207,6 +207,10 @@ func (h Handler) UserProfileUpdate(c *gin.Context) {
 	h.Log.Info("UserProfileUpdate is working")
 	accessToken := c.GetHeader("Authorization")
 	id, err := auth.GetUserIdFromAccessToken(accessToken)
+	if err != nil {
+		h.Log.Error(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
 	req := pb.UpdateProfileRequest{Id: id}
 	if err := c.BindJSON(&req); err != nil {
 		h.Log.Error(err.Error())
@@ -223,7 +227,7 @@ func (h Handler) UserProfileUpdate(c *gin.Context) {
 
 // GetAllUsers godoc
 // @Security ApiKeyAuth
-// @Summary ResetPass user
+// @Summary all users
 // @Description you can see all users
 // @Tags users
 // @Param limit query string false "Number of users to fetch"
@@ -275,7 +279,7 @@ func (h Handler) GetAllUsers(c *gin.Context) {
 
 // Delete godoc
 // @Security ApiKeyAuth
-// @Summary ResetPass user
+// @Summary delete user
 // @Description you can delete your profile
 // @Tags users
 // @Param user_id path string true "user_id"
@@ -338,7 +342,7 @@ func (h Handler) ActivityOfUser(c *gin.Context) {
 
 // Follow godoc
 // @Security ApiKeyAuth
-// @Summary ResetPass user
+// @Summary follow user
 // @Description you can follow another user
 // @Tags users
 // @Param user_id path string true "user_id"
@@ -373,7 +377,7 @@ func (h Handler) Follow(c *gin.Context) {
 
 // GetFollowers godoc
 // @Security ApiKeyAuth
-// @Summary ResetPass user
+// @Summary get followers
 // @Description you can see your followers
 // @Tags users
 // @Param user_id path string true "user_id"

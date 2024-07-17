@@ -74,11 +74,11 @@ const docTemplate = `{
         },
         "/api/v1/auth/refresh": {
             "post": {
-                "description": "it changes your password to new one",
+                "description": "it changes your access token",
                 "tags": [
                     "auth"
                 ],
-                "summary": "ResetPass user",
+                "summary": "Refresh token",
                 "parameters": [
                     {
                         "description": "token",
@@ -220,7 +220,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "ResetPass user",
+                "summary": "all users",
                 "parameters": [
                     {
                         "type": "string",
@@ -268,7 +268,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "ResetPass user",
+                "summary": "get user",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -345,7 +345,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "ResetPass user",
+                "summary": "delete user",
                 "parameters": [
                     {
                         "type": "string",
@@ -388,7 +388,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "ResetPass user",
+                "summary": "Activities user",
                 "parameters": [
                     {
                         "type": "string",
@@ -431,7 +431,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "ResetPass user",
+                "summary": "follow user",
                 "parameters": [
                     {
                         "type": "string",
@@ -474,7 +474,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "ResetPass user",
+                "summary": "get followers",
                 "parameters": [
                     {
                         "type": "string",

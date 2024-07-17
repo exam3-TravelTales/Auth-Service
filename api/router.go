@@ -9,6 +9,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// Router
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
@@ -17,7 +18,6 @@ import (
 // @description API Gateway of Authorazation
 // @host localhost:8085
 // BasePath: /
-
 func Router(hand *handler.Handler) *gin.Engine {
 	router := gin.Default()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
