@@ -22,16 +22,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ContentClient interface {
-	CreateStories(ctx context.Context, in *CreateStoriesRequest, opts ...grpc.CallOption) (*CreateStoriesResponse, error)
-	UpdateStories(ctx context.Context, in *UpdateStoriesReq, opts ...grpc.CallOption) (*UpdateStoriesRes, error)
-	DeleteStories(ctx context.Context, in *DeleteStoriesReq, opts ...grpc.CallOption) (*Void, error)
-	GetAllStories(ctx context.Context, in *GetAllStoriesReq, opts ...grpc.CallOption) (*GetAllStoriesRes, error)
-	GetStory(ctx context.Context, in *StoryId, opts ...grpc.CallOption) (*GetStoryRes, error)
-	CommentStory(ctx context.Context, in *CommentStoryReq, opts ...grpc.CallOption) (*CommentStoryRes, error)
-	GetCommentsOfStory(ctx context.Context, in *StoryId, opts ...grpc.CallOption) (*GetCommentsOfStoryRes, error)
-	Like(ctx context.Context, in *LikeReq, opts ...grpc.CallOption) (*LikeRes, error)
-	Itineraries(ctx context.Context, in *ItinerariesReq, opts ...grpc.CallOption) (*ItinerariesRes, error)
-	UpdateItineraries(ctx context.Context, in *UpdateItinerariesReq, opts ...grpc.CallOption) (*ItinerariesRes, error)
+	GetDestinations(ctx context.Context, in *GetDestinationsReq, opts ...grpc.CallOption) (*GetDestinationsRes, error)
+	GetDestinationsById(ctx context.Context, in *GetDestinationsByIdReq, opts ...grpc.CallOption) (*GetDestinationsByIdRes, error)
+	SendMessage(ctx context.Context, in *SendMessageReq, opts ...grpc.CallOption) (*SendMessageRes, error)
+	GetMessages(ctx context.Context, in *GetMessagesReq, opts ...grpc.CallOption) (*GetMessagesRes, error)
+	CreateTips(ctx context.Context, in *CreateTipsReq, opts ...grpc.CallOption) (*CreateTipsRes, error)
+	GetTips(ctx context.Context, in *GetTipsReq, opts ...grpc.CallOption) (*GetTipsRes, error)
+	GetUserStat(ctx context.Context, in *GetUserStatReq, opts ...grpc.CallOption) (*GetUserStatRes, error)
+	TopDestinations(ctx context.Context, in *Void, opts ...grpc.CallOption) (*Answer, error)
 }
 
 type contentClient struct {
@@ -42,90 +40,72 @@ func NewContentClient(cc grpc.ClientConnInterface) ContentClient {
 	return &contentClient{cc}
 }
 
-func (c *contentClient) CreateStories(ctx context.Context, in *CreateStoriesRequest, opts ...grpc.CallOption) (*CreateStoriesResponse, error) {
-	out := new(CreateStoriesResponse)
-	err := c.cc.Invoke(ctx, "/content.Content/CreateStories", in, out, opts...)
+func (c *contentClient) GetDestinations(ctx context.Context, in *GetDestinationsReq, opts ...grpc.CallOption) (*GetDestinationsRes, error) {
+	out := new(GetDestinationsRes)
+	err := c.cc.Invoke(ctx, "/content.Content/GetDestinations", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentClient) UpdateStories(ctx context.Context, in *UpdateStoriesReq, opts ...grpc.CallOption) (*UpdateStoriesRes, error) {
-	out := new(UpdateStoriesRes)
-	err := c.cc.Invoke(ctx, "/content.Content/UpdateStories", in, out, opts...)
+func (c *contentClient) GetDestinationsById(ctx context.Context, in *GetDestinationsByIdReq, opts ...grpc.CallOption) (*GetDestinationsByIdRes, error) {
+	out := new(GetDestinationsByIdRes)
+	err := c.cc.Invoke(ctx, "/content.Content/GetDestinationsById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentClient) DeleteStories(ctx context.Context, in *DeleteStoriesReq, opts ...grpc.CallOption) (*Void, error) {
-	out := new(Void)
-	err := c.cc.Invoke(ctx, "/content.Content/DeleteStories", in, out, opts...)
+func (c *contentClient) SendMessage(ctx context.Context, in *SendMessageReq, opts ...grpc.CallOption) (*SendMessageRes, error) {
+	out := new(SendMessageRes)
+	err := c.cc.Invoke(ctx, "/content.Content/SendMessage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentClient) GetAllStories(ctx context.Context, in *GetAllStoriesReq, opts ...grpc.CallOption) (*GetAllStoriesRes, error) {
-	out := new(GetAllStoriesRes)
-	err := c.cc.Invoke(ctx, "/content.Content/GetAllStories", in, out, opts...)
+func (c *contentClient) GetMessages(ctx context.Context, in *GetMessagesReq, opts ...grpc.CallOption) (*GetMessagesRes, error) {
+	out := new(GetMessagesRes)
+	err := c.cc.Invoke(ctx, "/content.Content/GetMessages", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentClient) GetStory(ctx context.Context, in *StoryId, opts ...grpc.CallOption) (*GetStoryRes, error) {
-	out := new(GetStoryRes)
-	err := c.cc.Invoke(ctx, "/content.Content/GetStory", in, out, opts...)
+func (c *contentClient) CreateTips(ctx context.Context, in *CreateTipsReq, opts ...grpc.CallOption) (*CreateTipsRes, error) {
+	out := new(CreateTipsRes)
+	err := c.cc.Invoke(ctx, "/content.Content/CreateTips", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentClient) CommentStory(ctx context.Context, in *CommentStoryReq, opts ...grpc.CallOption) (*CommentStoryRes, error) {
-	out := new(CommentStoryRes)
-	err := c.cc.Invoke(ctx, "/content.Content/CommentStory", in, out, opts...)
+func (c *contentClient) GetTips(ctx context.Context, in *GetTipsReq, opts ...grpc.CallOption) (*GetTipsRes, error) {
+	out := new(GetTipsRes)
+	err := c.cc.Invoke(ctx, "/content.Content/GetTips", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentClient) GetCommentsOfStory(ctx context.Context, in *StoryId, opts ...grpc.CallOption) (*GetCommentsOfStoryRes, error) {
-	out := new(GetCommentsOfStoryRes)
-	err := c.cc.Invoke(ctx, "/content.Content/GetCommentsOfStory", in, out, opts...)
+func (c *contentClient) GetUserStat(ctx context.Context, in *GetUserStatReq, opts ...grpc.CallOption) (*GetUserStatRes, error) {
+	out := new(GetUserStatRes)
+	err := c.cc.Invoke(ctx, "/content.Content/GetUserStat", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contentClient) Like(ctx context.Context, in *LikeReq, opts ...grpc.CallOption) (*LikeRes, error) {
-	out := new(LikeRes)
-	err := c.cc.Invoke(ctx, "/content.Content/Like", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contentClient) Itineraries(ctx context.Context, in *ItinerariesReq, opts ...grpc.CallOption) (*ItinerariesRes, error) {
-	out := new(ItinerariesRes)
-	err := c.cc.Invoke(ctx, "/content.Content/Itineraries", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contentClient) UpdateItineraries(ctx context.Context, in *UpdateItinerariesReq, opts ...grpc.CallOption) (*ItinerariesRes, error) {
-	out := new(ItinerariesRes)
-	err := c.cc.Invoke(ctx, "/content.Content/UpdateItineraries", in, out, opts...)
+func (c *contentClient) TopDestinations(ctx context.Context, in *Void, opts ...grpc.CallOption) (*Answer, error) {
+	out := new(Answer)
+	err := c.cc.Invoke(ctx, "/content.Content/TopDestinations", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -136,16 +116,14 @@ func (c *contentClient) UpdateItineraries(ctx context.Context, in *UpdateItinera
 // All implementations must embed UnimplementedContentServer
 // for forward compatibility
 type ContentServer interface {
-	CreateStories(context.Context, *CreateStoriesRequest) (*CreateStoriesResponse, error)
-	UpdateStories(context.Context, *UpdateStoriesReq) (*UpdateStoriesRes, error)
-	DeleteStories(context.Context, *DeleteStoriesReq) (*Void, error)
-	GetAllStories(context.Context, *GetAllStoriesReq) (*GetAllStoriesRes, error)
-	GetStory(context.Context, *StoryId) (*GetStoryRes, error)
-	CommentStory(context.Context, *CommentStoryReq) (*CommentStoryRes, error)
-	GetCommentsOfStory(context.Context, *StoryId) (*GetCommentsOfStoryRes, error)
-	Like(context.Context, *LikeReq) (*LikeRes, error)
-	Itineraries(context.Context, *ItinerariesReq) (*ItinerariesRes, error)
-	UpdateItineraries(context.Context, *UpdateItinerariesReq) (*ItinerariesRes, error)
+	GetDestinations(context.Context, *GetDestinationsReq) (*GetDestinationsRes, error)
+	GetDestinationsById(context.Context, *GetDestinationsByIdReq) (*GetDestinationsByIdRes, error)
+	SendMessage(context.Context, *SendMessageReq) (*SendMessageRes, error)
+	GetMessages(context.Context, *GetMessagesReq) (*GetMessagesRes, error)
+	CreateTips(context.Context, *CreateTipsReq) (*CreateTipsRes, error)
+	GetTips(context.Context, *GetTipsReq) (*GetTipsRes, error)
+	GetUserStat(context.Context, *GetUserStatReq) (*GetUserStatRes, error)
+	TopDestinations(context.Context, *Void) (*Answer, error)
 	mustEmbedUnimplementedContentServer()
 }
 
@@ -153,35 +131,29 @@ type ContentServer interface {
 type UnimplementedContentServer struct {
 }
 
-func (UnimplementedContentServer) CreateStories(context.Context, *CreateStoriesRequest) (*CreateStoriesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateStories not implemented")
+func (UnimplementedContentServer) GetDestinations(context.Context, *GetDestinationsReq) (*GetDestinationsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDestinations not implemented")
 }
-func (UnimplementedContentServer) UpdateStories(context.Context, *UpdateStoriesReq) (*UpdateStoriesRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateStories not implemented")
+func (UnimplementedContentServer) GetDestinationsById(context.Context, *GetDestinationsByIdReq) (*GetDestinationsByIdRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDestinationsById not implemented")
 }
-func (UnimplementedContentServer) DeleteStories(context.Context, *DeleteStoriesReq) (*Void, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteStories not implemented")
+func (UnimplementedContentServer) SendMessage(context.Context, *SendMessageReq) (*SendMessageRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
 }
-func (UnimplementedContentServer) GetAllStories(context.Context, *GetAllStoriesReq) (*GetAllStoriesRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllStories not implemented")
+func (UnimplementedContentServer) GetMessages(context.Context, *GetMessagesReq) (*GetMessagesRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMessages not implemented")
 }
-func (UnimplementedContentServer) GetStory(context.Context, *StoryId) (*GetStoryRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetStory not implemented")
+func (UnimplementedContentServer) CreateTips(context.Context, *CreateTipsReq) (*CreateTipsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTips not implemented")
 }
-func (UnimplementedContentServer) CommentStory(context.Context, *CommentStoryReq) (*CommentStoryRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CommentStory not implemented")
+func (UnimplementedContentServer) GetTips(context.Context, *GetTipsReq) (*GetTipsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTips not implemented")
 }
-func (UnimplementedContentServer) GetCommentsOfStory(context.Context, *StoryId) (*GetCommentsOfStoryRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCommentsOfStory not implemented")
+func (UnimplementedContentServer) GetUserStat(context.Context, *GetUserStatReq) (*GetUserStatRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserStat not implemented")
 }
-func (UnimplementedContentServer) Like(context.Context, *LikeReq) (*LikeRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Like not implemented")
-}
-func (UnimplementedContentServer) Itineraries(context.Context, *ItinerariesReq) (*ItinerariesRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Itineraries not implemented")
-}
-func (UnimplementedContentServer) UpdateItineraries(context.Context, *UpdateItinerariesReq) (*ItinerariesRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateItineraries not implemented")
+func (UnimplementedContentServer) TopDestinations(context.Context, *Void) (*Answer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TopDestinations not implemented")
 }
 func (UnimplementedContentServer) mustEmbedUnimplementedContentServer() {}
 
@@ -196,182 +168,146 @@ func RegisterContentServer(s grpc.ServiceRegistrar, srv ContentServer) {
 	s.RegisterService(&Content_ServiceDesc, srv)
 }
 
-func _Content_CreateStories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateStoriesRequest)
+func _Content_GetDestinations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDestinationsReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServer).CreateStories(ctx, in)
+		return srv.(ContentServer).GetDestinations(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/content.Content/CreateStories",
+		FullMethod: "/content.Content/GetDestinations",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).CreateStories(ctx, req.(*CreateStoriesRequest))
+		return srv.(ContentServer).GetDestinations(ctx, req.(*GetDestinationsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Content_UpdateStories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateStoriesReq)
+func _Content_GetDestinationsById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDestinationsByIdReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServer).UpdateStories(ctx, in)
+		return srv.(ContentServer).GetDestinationsById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/content.Content/UpdateStories",
+		FullMethod: "/content.Content/GetDestinationsById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).UpdateStories(ctx, req.(*UpdateStoriesReq))
+		return srv.(ContentServer).GetDestinationsById(ctx, req.(*GetDestinationsByIdReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Content_DeleteStories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteStoriesReq)
+func _Content_SendMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendMessageReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServer).DeleteStories(ctx, in)
+		return srv.(ContentServer).SendMessage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/content.Content/DeleteStories",
+		FullMethod: "/content.Content/SendMessage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).DeleteStories(ctx, req.(*DeleteStoriesReq))
+		return srv.(ContentServer).SendMessage(ctx, req.(*SendMessageReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Content_GetAllStories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllStoriesReq)
+func _Content_GetMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMessagesReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServer).GetAllStories(ctx, in)
+		return srv.(ContentServer).GetMessages(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/content.Content/GetAllStories",
+		FullMethod: "/content.Content/GetMessages",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).GetAllStories(ctx, req.(*GetAllStoriesReq))
+		return srv.(ContentServer).GetMessages(ctx, req.(*GetMessagesReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Content_GetStory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StoryId)
+func _Content_CreateTips_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTipsReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServer).GetStory(ctx, in)
+		return srv.(ContentServer).CreateTips(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/content.Content/GetStory",
+		FullMethod: "/content.Content/CreateTips",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).GetStory(ctx, req.(*StoryId))
+		return srv.(ContentServer).CreateTips(ctx, req.(*CreateTipsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Content_CommentStory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CommentStoryReq)
+func _Content_GetTips_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTipsReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServer).CommentStory(ctx, in)
+		return srv.(ContentServer).GetTips(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/content.Content/CommentStory",
+		FullMethod: "/content.Content/GetTips",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).CommentStory(ctx, req.(*CommentStoryReq))
+		return srv.(ContentServer).GetTips(ctx, req.(*GetTipsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Content_GetCommentsOfStory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StoryId)
+func _Content_GetUserStat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserStatReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServer).GetCommentsOfStory(ctx, in)
+		return srv.(ContentServer).GetUserStat(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/content.Content/GetCommentsOfStory",
+		FullMethod: "/content.Content/GetUserStat",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).GetCommentsOfStory(ctx, req.(*StoryId))
+		return srv.(ContentServer).GetUserStat(ctx, req.(*GetUserStatReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Content_Like_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LikeReq)
+func _Content_TopDestinations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Void)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContentServer).Like(ctx, in)
+		return srv.(ContentServer).TopDestinations(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/content.Content/Like",
+		FullMethod: "/content.Content/TopDestinations",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).Like(ctx, req.(*LikeReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Content_Itineraries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItinerariesReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContentServer).Itineraries(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/content.Content/Itineraries",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).Itineraries(ctx, req.(*ItinerariesReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Content_UpdateItineraries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateItinerariesReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContentServer).UpdateItineraries(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/content.Content/UpdateItineraries",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServer).UpdateItineraries(ctx, req.(*UpdateItinerariesReq))
+		return srv.(ContentServer).TopDestinations(ctx, req.(*Void))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -384,44 +320,36 @@ var Content_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ContentServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateStories",
-			Handler:    _Content_CreateStories_Handler,
+			MethodName: "GetDestinations",
+			Handler:    _Content_GetDestinations_Handler,
 		},
 		{
-			MethodName: "UpdateStories",
-			Handler:    _Content_UpdateStories_Handler,
+			MethodName: "GetDestinationsById",
+			Handler:    _Content_GetDestinationsById_Handler,
 		},
 		{
-			MethodName: "DeleteStories",
-			Handler:    _Content_DeleteStories_Handler,
+			MethodName: "SendMessage",
+			Handler:    _Content_SendMessage_Handler,
 		},
 		{
-			MethodName: "GetAllStories",
-			Handler:    _Content_GetAllStories_Handler,
+			MethodName: "GetMessages",
+			Handler:    _Content_GetMessages_Handler,
 		},
 		{
-			MethodName: "GetStory",
-			Handler:    _Content_GetStory_Handler,
+			MethodName: "CreateTips",
+			Handler:    _Content_CreateTips_Handler,
 		},
 		{
-			MethodName: "CommentStory",
-			Handler:    _Content_CommentStory_Handler,
+			MethodName: "GetTips",
+			Handler:    _Content_GetTips_Handler,
 		},
 		{
-			MethodName: "GetCommentsOfStory",
-			Handler:    _Content_GetCommentsOfStory_Handler,
+			MethodName: "GetUserStat",
+			Handler:    _Content_GetUserStat_Handler,
 		},
 		{
-			MethodName: "Like",
-			Handler:    _Content_Like_Handler,
-		},
-		{
-			MethodName: "Itineraries",
-			Handler:    _Content_Itineraries_Handler,
-		},
-		{
-			MethodName: "UpdateItineraries",
-			Handler:    _Content_UpdateItineraries_Handler,
+			MethodName: "TopDestinations",
+			Handler:    _Content_TopDestinations_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
